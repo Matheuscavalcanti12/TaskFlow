@@ -12,9 +12,4 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.12.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="package.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
-    <Content Update="package-lock.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
-    <Content Remove="node_modules\**" />
-  </ItemGroup>
 </Project>
