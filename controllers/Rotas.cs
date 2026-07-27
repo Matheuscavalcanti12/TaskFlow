@@ -191,3 +191,30 @@ public static class Perfil
     private static MySqlConnection CreateConnection() =>
         new("server=localhost;database=TaskFlow;user=root;password=;");
 }
+
+
+
+public static class CadastroAtividade
+{
+    public static void cadastroAtividade (this WebApplication app)
+    {
+        app.MapPost("/criando_atividade", (CriarAtividadeRequest atividade ) =>
+        {
+            //validando campos que eu nao quero que seja nulo
+            if(string.IsNullOrWhiteSpace(atividade.titulo)||
+               string.IsNullOrWhiteSpace(atividade.descricao))
+            {
+                return Results.BadRequest(error: "Titulo e descriçâo não pode ser nulo");
+            }
+
+            try
+            {
+                  
+            }
+            catch()
+            {
+                
+            }
+        });
+    }
+}
