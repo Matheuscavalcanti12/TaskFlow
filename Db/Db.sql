@@ -27,8 +27,7 @@ CREATE TABLE atividades (
     prazo TIMESTAMP,
      criada_em TIMESTAMP NOT NULL
         DEFAULT CURRENT_TIMESTAMP,
-    concluida_em TIMESTAMP NOT NULL
-        DEFAULT CURRENT_TIMESTAMP,
+    concluida_em TIMESTAMP NULL DEFAULT NULL,
     usuario_id INTEGER NOT NULL,
     categoria_id INTEGER,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id_usuario),

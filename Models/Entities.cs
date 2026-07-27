@@ -1,8 +1,6 @@
-using System;
-
 namespace Models;
 
-public class Usuarios
+public class Usuario
 {
     public int id_usuario { get; set; }
     public string nome { get; set; } = string.Empty;
@@ -11,21 +9,14 @@ public class Usuarios
     public DateTime criado_em { get; set; }
 }
 
-public class UsuarioCadastroRequest
+public class Categoria
 {
-    public string nome { get; set; } = string.Empty;
-    public string email { get; set; } = string.Empty;
-    public string senha { get; set; } = string.Empty;
-}
-
-public class Categorias
-{
-    public int id_categorias { get; set; }
+    public int id_categoria { get; set; }
     public string nome { get; set; } = string.Empty;
     public int usuario_id { get; set; }
 }
 
-public class Tarefas
+public class Atividade
 {
     public int id { get; set; }
     public string titulo { get; set; } = string.Empty;
@@ -34,12 +25,12 @@ public class Tarefas
     public string prioridade { get; set; } = string.Empty;
     public DateTime? prazo { get; set; }
     public DateTime criada_em { get; set; }
-    public DateTime concluida_em { get; set; }
+    public DateTime? concluida_em { get; set; }
     public int usuario_id { get; set; }
     public int? categoria_id { get; set; }
 }
 
-public class HistoricoAtividades
+public class HistoricoAtividade
 {
     public int id { get; set; }
     public int atividade_id { get; set; }
