@@ -441,3 +441,55 @@ public static class AtualizarAtividade
     private static MySqlConnection CreateConnection() =>
         new("server=localhost;database=TaskFlow;user=root;password=;");
 }
+
+public static class RemoverAtividade
+{
+    public static void removerAtividade(this WebApplication app)
+    {
+        app.MapPut("/RemoverAtividade/{id:int}", (int id, ClaimsPrincipal usuarioAutenticado) =>
+        {
+            var idClaim = usuarioAutenticado.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(idClaim, out var usuarioId))
+            {
+                return Results.Unauthorized();
+            }
+
+            try
+            {
+                using var connection = CreateConnection();
+                connection.Open();
+
+                const string sql = """
+                    UPDATE atividades
+                    SET status = @status
+                    WHERE id = @id
+                      AND usuario_id = @usuarioId;
+                    """;
+
+                using var cmd = new MySqlCommand(sql, connection);
+                cmd.Parameters.AddWithValue("@status", "cancelada");
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@usuarioId", usuarioId);
+
+                var rowsAffected = cmd.ExecuteNonQuery();
+                if (rowsAffected == 0)
+                {
+                    return Results.NotFound(new { erro = $"Atividade com id {id} nao encontrada." });
+                }
+
+                return Results.Ok(new { mensagem = "Atividade removida da visualizacao com sucesso." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERRO REMOVER ATIVIDADE: " + ex.Message);
+                return Results.Problem("Erro ao remover atividade.");
+            }
+        })
+        .RequireAuthorization();
+    }
+
+    private static MySqlConnection CreateConnection() =>
+        new("server=localhost;database=TaskFlow;user=root;password=;");
+}
+
+

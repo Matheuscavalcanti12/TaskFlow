@@ -65,4 +65,5 @@ app.perfil();
 app.cadastroAtividade();
 app.buscarAtividade();
 app.atualizarAtividade();
+app.removerAtividade();
 app.Run();
