@@ -62,4 +62,7 @@ app.UseAuthorization();
 app.cadastro();
 app.login();
 app.perfil();
+app.cadastroAtividade();
+app.buscarAtividade();
+app.atualizarAtividade();
 app.Run();
