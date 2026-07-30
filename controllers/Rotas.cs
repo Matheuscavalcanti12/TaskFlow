@@ -549,7 +549,133 @@ public static class Categoria
 }
 
 
-public static class BuscarCategoria
+public static class BuscarCategorias
 {
-    
+    public static void BuscarCategoria(this WebApplication app)
+    {
+        app.MapGet("/buscarCategorias/{id_categorias:int}",
+        (int id_categorias, ClaimsPrincipal usuarioAutenticado) =>
+        {
+            var idClaim = usuarioAutenticado.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(idClaim, out var usuarioId))
+            {
+                return Results.Unauthorized();
+            }
+
+            try
+            {
+                using var connection = CreateConnection();
+                connection.Open();
+
+                const string sql = """
+                    SELECT id_categorias, nome
+                    FROM categorias
+                    WHERE id_categorias = @id_categorias
+                    AND usuario_id = @usuarioId;
+                    """;
+
+                using var cmd = new MySqlCommand(sql, connection);
+
+                cmd.Parameters.AddWithValue("@id_categorias", id_categorias);
+                cmd.Parameters.AddWithValue("@usuarioId", usuarioId);
+
+                using var reader = cmd.ExecuteReader();
+
+                if (!reader.Read())
+                {
+                    return Results.NotFound(new
+                    {
+                        mensagem = "Categoria não encontrada."
+                    });
+                }
+
+                return Results.Ok(new
+                {
+                    id_categorias = reader.GetInt32("id_categorias"),
+                    nome = reader.GetString("nome")
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(new
+                {
+                    mensagem = ex.Message
+                });
+            }
+        })
+        .RequireAuthorization();
+    }
+
+    private static MySqlConnection CreateConnection() =>
+        new("server=localhost;database=TaskFlow;user=root;password=;");
+}
+
+public static class AtualizarCategoria
+{
+    public static void AtualizarCategorias(this WebApplication app)
+    {
+        app.MapPut("/categorias/{id_categorias:int}", (int id_categorias, CategoriasCriadas categorias, ClaimsPrincipal usuarioAutenticado) =>
+        {
+            var idClaim = usuarioAutenticado.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(idClaim, out var usuarioId))
+            {
+                return Results.Unauthorized();
+            }
+
+            if (string.IsNullOrWhiteSpace(categorias.nome))
+            {
+                return Results.BadRequest(new
+                {
+                    mensagem = "Nome da categoria é obrigatório."
+                });
+            }
+
+            try
+            {
+                using var connection = CreateConnection();
+                connection.Open();
+
+                const string sql = """
+                    UPDATE categorias
+                    SET nome = @nome
+                    WHERE id_categorias = @id_categorias
+                    AND usuario_id = @usuarioId;
+                    """;
+
+                using var cmd = new MySqlCommand(sql, connection);
+
+                cmd.Parameters.AddWithValue("@nome", categorias.nome);
+                cmd.Parameters.AddWithValue("@id_categorias", id_categorias);
+                cmd.Parameters.AddWithValue("@usuarioId", usuarioId);
+
+                int linhasAfetadas = cmd.ExecuteNonQuery();
+
+                if (linhasAfetadas == 0)
+                {
+                    return Results.NotFound(new
+                    {
+                        mensagem = "Categoria não encontrada."
+                    });
+                }
+
+                return Results.Ok(new
+                {
+                    mensagem = "Categoria atualizada com sucesso."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(new
+                {
+                    mensagem = ex.Message
+                });
+            }
+        })
+        .RequireAuthorization();
+    }
+
+    private static MySqlConnection CreateConnection() =>
+        new("server=localhost;database=TaskFlow;user=root;password=;");
 }
