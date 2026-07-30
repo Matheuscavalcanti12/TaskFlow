@@ -492,4 +492,64 @@ public static class RemoverAtividade
         new("server=localhost;database=TaskFlow;user=root;password=;");
 }
 
+//endpoints de categorias, Ex: Trablho,estudos 
+public static class Categoria
+{
+    public static void Categorias(this WebApplication app)
+    {
+        app.MapPost("/categorias", (CategoriasCriadas categorias, ClaimsPrincipal usuarioAutenticado) =>
+        {
+            var idClaim = usuarioAutenticado.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            if (!int.TryParse(idClaim, out var usuarioId))
+            {
+                return Results.Unauthorized();
+            }
+
+            if (string.IsNullOrWhiteSpace(categorias.nome))
+            {
+                return Results.BadRequest(new
+                {
+                    mensagem = "Nome da categoria é obrigatório."
+                });
+            }
+
+            try
+            {
+                using var connection = CreateConnection();
+                connection.Open();
+
+                const string sql = "INSERT INTO categorias (nome, usuario_id) VALUES (@nome, @usuarioId)";
+
+                using var cmd = new MySqlCommand(sql, connection);
+
+                cmd.Parameters.AddWithValue("@nome", categorias.nome);
+                cmd.Parameters.AddWithValue("@usuarioId", usuarioId);
+
+                cmd.ExecuteNonQuery();
+
+                return Results.Ok(new
+                {
+                    mensagem = "Categoria cadastrada com sucesso."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(new
+                {
+                    mensagem = ex.Message
+                });
+            }
+        })
+        .RequireAuthorization();
+    }
+
+    private static MySqlConnection CreateConnection() =>
+        new("server=localhost;database=TaskFlow;user=root;password=;");
+}
+
+
+public static class BuscarCategoria
+{
+    
+}
