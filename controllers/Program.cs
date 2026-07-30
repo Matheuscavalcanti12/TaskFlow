@@ -8,6 +8,16 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthorization();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("React", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:8080")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -59,6 +69,7 @@ var app = builder.Build();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors("React");
 app.cadastro();
 app.login();
 app.perfil();
