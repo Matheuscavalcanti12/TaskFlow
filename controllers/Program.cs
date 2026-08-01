@@ -13,7 +13,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("React", policy =>
     {
         policy
-            .WithOrigins("http://localhost:8080")
+            .WithOrigins(
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "http://localhost:8080"
+            )
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -67,17 +71,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 var app = builder.Build();
 app.UseRateLimiter();
+app.UseCors("React");
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("React");
 app.cadastro();
 app.login();
 app.perfil();
 app.cadastroAtividade();
+app.listarAtividades();
 app.buscarAtividade();
 app.atualizarAtividade();
 app.removerAtividade();
+app.atualizarStatus();
 app.Categorias();
+app.listarCategorias();
 app.BuscarCategoria();
 app.AtualizarCategorias();
+app.RemoverCategorias();
 app.Run();
